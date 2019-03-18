@@ -18,7 +18,7 @@ def record_video():
     # Define the codec and create VideoWriter object.The output is stored in 'file_name' file.
     out = cv2.VideoWriter(file_name,cv2.VideoWriter_fourcc('M','J','P','G'),fps,(frame_width,frame_height))
 
-    limit_time = duration #*(15/10)
+    limit_time = duration *(fps/10)
     start_time = time.time()
     while time.time() - start_time < limit_time:
         ret, frame = cap.read()
@@ -43,9 +43,7 @@ def record_video():
     out.release()
 
 def diff(f0,f1):
-##    d1 = cv2.absdiff(f2,f1)
     difference = cv2.absdiff(f1,f0)
-##    overlap = cv2.bitwise_and(d1,d2)
     return difference
 
 def frame_difference():
@@ -53,11 +51,9 @@ def frame_difference():
 
     ret, frame0 = cap.read()
     ret, frame1 = cap.read()
-##    ret, frame2 = cap.read()
     
     frame0 = cv2.cvtColor(frame0, cv2.COLOR_BGR2GRAY)
     frame1 = cv2.cvtColor(frame1, cv2.COLOR_BGR2GRAY)
-##    frame2 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
 
     while (cap.isOpened()):
         cv2.imshow("Diference",diff(frame0,frame1))
@@ -65,9 +61,7 @@ def frame_difference():
         ret,next_frame = cap.read()
         if ret == True:
             frame0 = frame1
-##            frame1 = frame2
             frame1 = cv2.cvtColor(next_frame,cv2.COLOR_BGR2GRAY)
-##            frame2 = cv2.cvtColor(next_frame,cv2.COLOR_BGR2GRAY)
         
             cv2.imshow('frame',frame0)
             
@@ -97,15 +91,9 @@ def background_modeling(tipe):
     return list_frame
 
 def treshold(frame):
-
     frame[frame < T] = 0
     frame[frame>=T] =255
-##    for i in range(len(frame)):
-##        for j in range(len(i)):
-##            if frame[j][i]< T :
-##                 frame[i][j]= 0
-##            else:
-##                frame[j][i]= 255
+
     return frame
     
 def foreground_mask(bg):
@@ -139,8 +127,10 @@ record_video()
 ## frame differencing
 frame_difference()
 
+##background modeling
 bg = background_modeling("mean")
 
+## foreground mask
 foreground_mask(bg)
 
 
